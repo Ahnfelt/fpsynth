@@ -1,0 +1,14 @@
+browserMain(system: BrowserSystem) {
+    mutable playing = False
+    Js->document->innerText = "Click to play!"
+    Js->document->addEventListener("click", Js.async0 {
+        if(!playing) {
+            playing = True
+            let audioContext = Js->AudioContext->()
+            Js.await(audioContext->audioWorklet->addModule("/js/script/script/AudioWorklet.run.bundle.js"))
+            let testNode = Js->AudioWorkletNode->(audioContext, "custom-sound")
+            testNode->connect(audioContext->destination)
+        }!
+    })
+}
+
