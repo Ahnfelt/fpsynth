@@ -2,9 +2,7 @@ import Sound
 
 browserMain(system: BrowserSystem) {
     mutable sampleIndex = 0
-    let audioWorkletProcessor = Js->{
-        Js->AudioWorkletProcessor->call(Js->this)
-    }
+    let audioWorkletProcessor = Js->Function->("AudioWorkletProcessor(this)")
     audioWorkletProcessor->prototype = Js->Object->create(Js->AudioWorkletProcessor->prototype)
     audioWorkletProcessor->prototype->constructor = audioWorkletProcessor
     audioWorkletProcessor->prototype->process = Js->{inputs, outputs, parameters =>

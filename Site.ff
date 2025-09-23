@@ -1,11 +1,16 @@
 browserMain(system: BrowserSystem) {
     mutable playing = False
-    Js->document->innerText = "Click to play!"
+    let audioWorkletCode = system.httpClient().get("/js/script/script/AudioWorklet.run.bundle.js", []) {_.readText()}
+    let workaround = "function queueMicrotask(f) {f()}; const performance = {now: () => 0};"
+    let fixedCode = workaround + "\n" + audioWorkletCode
+    let blob = Js->Blob->([fixedCode], Js->(type = "application/javascript"))
+    let blobUrl = Js->URL->createObjectURL(blob)
+    Js->document->body->textContent = "Click to play!"
     Js->document->addEventListener("click", Js.async0 {
         if(!playing) {
             playing = True
             let audioContext = Js->AudioContext->()
-            Js.await(audioContext->audioWorklet->addModule("/js/script/script/AudioWorklet.run.bundle.js"))
+            Js.await(audioContext->audioWorklet->addModule(blobUrl))
             let testNode = Js->AudioWorkletNode->(audioContext, "custom-sound")
             testNode->connect(audioContext->destination)
         }!

@@ -1,6 +1,7 @@
 import WebServer from ff:webserver
 
 nodeMain(system: NodeSystem): Unit {
+    Log.debug("Starting server")
     WebServer.new(system, "localhost", 8080).listen {request =>
         if(request.readPath() == "/") {
             request.writeHeader("Content-Type", "text/html; charset=UTF-8")
