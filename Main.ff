@@ -5,7 +5,7 @@ nodeMain(system: NodeSystem): Unit {
         if(request.readPath() == "/") {
             request.writeHeader("Content-Type", "text/html; charset=UTF-8")
             request.writeText("<!doctype html>")
-            request.writeText("<script type='module' src='/js/script/script/Main.run.mjs'></script>")
+            request.writeText("<script type='module' src='/js/script/script/Site.run.bundle.js'></script>")
         } elseIf {request.readPath() == "/hello"} {
             request.writeHeader("Content-Type", "text/plain; charset=UTF-8")
             request.writeText("Hello from server!")
@@ -19,7 +19,7 @@ nodeMain(system: NodeSystem): Unit {
 }
 
 buildMain(system: BuildSystem) {
-    let browserAssets = system.compileForBrowser(["Main.ff"])
+    let browserAssets = system.bundleForBrowser(["Site.ff", "AudioWorklet.ff"])
     let assets = AssetSystem.create().addAssets("/js", browserAssets)
     system.setAssets(assets)
 }
