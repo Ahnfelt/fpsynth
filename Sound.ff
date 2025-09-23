@@ -1,0 +1,5 @@
+sound(sampleIndex: Int, sampleRate: Int): Float {
+    let frequency = 440.0
+    let phase = (sampleIndex / sampleRate) * frequency * 2 * Float.pi()
+    phase.sin()
+}

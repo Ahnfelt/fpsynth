@@ -1,0 +1,5 @@
+browserMain(system: BrowserSystem) {
+    let message = system.httpClient().get("/hello", []) {_.readText()}
+    system.js()->alert(message)
+}
+
