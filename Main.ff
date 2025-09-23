@@ -6,10 +6,10 @@ nodeMain(system: NodeSystem): Unit {
         if(request.readPath() == "/") {
             request.writeHeader("Content-Type", "text/html; charset=UTF-8")
             request.writeText("<!doctype html>")
-            request.writeText("<script type='module' src='/js/script/script/Site.run.bundle.js'></script>")
-        } elseIf {request.readPath() == "/hello"} {
-            request.writeHeader("Content-Type", "text/plain; charset=UTF-8")
-            request.writeText("Hello from server!")
+            request.writeText("<script type='module' src='/js/script/script/Site.run.mjs'></script>")
+        } elseIf {request.readPath() == "/js/AudioWorklet.mjs"} {
+            request.writeHeader("Content-Type", "text/javascript; charset=UTF-8")
+            request.writeText(workletScript)
         } elseIf {request.readPath().startsWith("/js/") && !request.readPath().contains("..")} {
             request.writeHeader("Content-Type", "text/javascript; charset=UTF-8")
             request.writeText(system.assets().readText(request.readPath()))
@@ -20,7 +20,36 @@ nodeMain(system: NodeSystem): Unit {
 }
 
 buildMain(system: BuildSystem) {
-    let browserAssets = system.bundleForBrowser(["Site.ff", "AudioWorklet.ff"])
+    let browserAssets = system.compileForBrowser(["Site.ff"])
     let assets = AssetSystem.create().addAssets("/js", browserAssets)
     system.setAssets(assets)
 }
+
+workletScript = """
+import {sound_} from '/js/script/script/Sound.mjs'
+
+class MyProcessor extends AudioWorkletProcessor {
+    constructor() {
+        super()
+        this.phase = 0
+        this.sampleRate = sampleRate
+    }
+
+    process(inputs, outputs, parameters) {
+        const output = outputs[0]
+
+        for (let channel = 0; channel < output.length; channel++) {
+            const outputChannel = output[channel]
+            for(let i = 0; i < outputChannel.length; i++) {
+                const time = this.phase / this.sampleRate
+                outputChannel[i] = sound_(time)
+                this.phase++
+            }
+        }
+
+        return true
+    }
+}
+
+registerProcessor('custom-sound', MyProcessor)
+"""
