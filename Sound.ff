@@ -36,10 +36,10 @@ adsrEnvelope(
     release: Float = 0.2
     sustainLevel: Float = 0.7
 ): Float {
-    let attackTime = attack * duration;
-    let decayTime = decay * duration;
-    let releaseTime = release * duration;
-    let sustainEnd = duration - releaseTime;
+    let attackTime = attack * duration
+    let decayTime = decay * duration
+    let releaseTime = release * duration
+    let sustainEnd = duration - releaseTime
     if(time < attackTime) {
         time / attackTime
     } elseIf {time < attackTime + decayTime} {
