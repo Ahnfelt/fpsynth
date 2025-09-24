@@ -1,13 +1,16 @@
 sound(time: Float): Float {
-    envelope(time, 1.0, noteSound(time, midiC(4)), linearEnvelope) +
-    envelope(time - 1.0, 1.0, noteSound(time, midiD(4)), linearEnvelope) +
-    envelope(time - 2.0, 1.0, noteSound(time, midiE(4)), linearEnvelope)
+    envelope(time, 1.0, noteSound(time, midiC(4)), adsrEnvelope) +
+    envelope(time - 1.0, 1.0, noteSound(time, midiD(4)), adsrEnvelope) +
+    envelope(time - 2.0, 1.0, noteSound(time, midiE(4)), adsrEnvelope)
 }
 
 noteSound(time: Float, frequency: Float): Float {
     let phase = time * frequency * 2 * Float.pi()
     phase.sin()
 }
+
+
+// Envelopes
 
 envelope(time: Float, duration: Float, amplitude: Float, envelope: (Float, Float) => Float): Float {
     if(time < 0.0 || time > duration) {0.0} else {
@@ -23,6 +26,31 @@ linearEnvelope(time: Float, duration: Float): Float {
         1.0 - (time - half) / half
     }
 }
+
+adsrEnvelope(
+    time: Float
+    duration: Float
+    attack: Float = 0.1
+    decay: Float = 0.2
+    sustain: Float = 0.5
+    release: Float = 0.2
+    sustainLevel: Float = 0.7
+): Float {
+    let attackTime = attack * duration;
+    let decayTime = decay * duration;
+    let releaseTime = release * duration;
+    let sustainEnd = duration - releaseTime;
+    if(time < attackTime) {
+        time / attackTime
+    } elseIf {time < attackTime + decayTime} {
+        1.0 - (1.0 - sustainLevel) * (time - attackTime) / decayTime
+    } elseIf {time < sustainEnd} {
+        sustainLevel
+    } else {
+        sustainLevel * (1.0 - (time - sustainEnd) / releaseTime)
+    }
+}
+
 
 // Notes (computed according to the MIDI standard)
 
