@@ -1,7 +1,7 @@
 sound(time: Float): Float {
-    envelope(time, 1.0, sine(time, midiC(4)), adsrEnvelope) +
-    envelope(time - 1.0, 1.0, sine(time, midiD(4)), adsrEnvelope) +
-    envelope(time - 2.0, 1.0, sine(time, midiE(4)), adsrEnvelope)
+    envelope(time, 1.0, adsrEnvelope) {sine(time, midiC(4))} +
+    envelope(time - 1.0, 1.0, adsrEnvelope) {sine(time, midiD(4))} +
+    envelope(time - 2.0, 1.0, adsrEnvelope) {sine(time, midiE(4))}
 }
 
 
@@ -30,9 +30,9 @@ triangle(time: Float, frequency: Float): Float {
 
 // Envelopes
 
-envelope(time: Float, duration: Float, amplitude: Float, envelope: (Float, Float) => Float): Float {
+envelope(time: Float, duration: Float, envelope: (Float, Float) => Float, amplitude: () => Float): Float {
     if(time < 0.0 || time > duration) {0.0} else {
-        amplitude * envelope(time, duration)
+        amplitude() * envelope(time, duration)
     }
 }
 
