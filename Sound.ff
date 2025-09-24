@@ -8,7 +8,7 @@ noteSound(time: Float, frequency: Float): Float {
 }
 
 
-// Notes (as named by the MIDI standard)
+// Notes (computed according to the MIDI standard)
 
 midiC(octave: Int): Float {
     midiNote(octave, 0.0)
