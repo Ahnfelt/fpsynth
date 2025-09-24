@@ -1,5 +1,6 @@
 sound(time: Float): Float {
-    noteSound(time, midiA(4))
+    let s = noteSound(time, midiA(4))
+    envelope(time, 1.0, s, linearEnvelope)
 }
 
 noteSound(time: Float, frequency: Float): Float {
@@ -7,6 +8,20 @@ noteSound(time: Float, frequency: Float): Float {
     phase.sin()
 }
 
+envelope(time: Float, duration: Float, amplitude: Float, envelope: (Float, Float) => Float): Float {
+    if(time < 0.0 || time > duration) {0.0} else {
+        amplitude * envelope(time, duration)
+    }
+}
+
+linearEnvelope(time: Float, duration: Float): Float {
+    let half = duration / 2.0
+    if(time < half) {
+        time / half
+    } else {
+        1.0 - (time - half) / half
+    }
+}
 
 // Notes (computed according to the MIDI standard)
 
