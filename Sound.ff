@@ -1,6 +1,7 @@
 sound(time: Float): Float {
-    let s = noteSound(time, midiA(4))
-    envelope(time, 1.0, s, linearEnvelope)
+    envelope(time, 1.0, noteSound(time, midiC(4)), linearEnvelope) +
+    envelope(time - 1.0, 1.0, noteSound(time, midiD(4)), linearEnvelope) +
+    envelope(time - 2.0, 1.0, noteSound(time, midiE(4)), linearEnvelope)
 }
 
 noteSound(time: Float, frequency: Float): Float {
