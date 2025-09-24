@@ -1,12 +1,30 @@
 sound(time: Float): Float {
-    envelope(time, 1.0, noteSound(time, midiC(4)), adsrEnvelope) +
-    envelope(time - 1.0, 1.0, noteSound(time, midiD(4)), adsrEnvelope) +
-    envelope(time - 2.0, 1.0, noteSound(time, midiE(4)), adsrEnvelope)
+    envelope(time, 1.0, triangle(time, midiC(4)), adsrEnvelope) +
+    envelope(time - 1.0, 1.0, triangle(time, midiD(4)), adsrEnvelope) +
+    envelope(time - 2.0, 1.0, triangle(time, midiE(4)), adsrEnvelope)
 }
 
-noteSound(time: Float, frequency: Float): Float {
+
+// Waveforms
+
+sine(time: Float, frequency: Float): Float {
     let phase = time * frequency * 2 * Float.pi()
     phase.sin()
+}
+
+square(time: Float, frequency: Float): Float {
+    let phase = time * frequency * 2 * Float.pi()
+    phase.sin().sign()
+}
+
+sawtooth(time: Float, frequency: Float): Float {
+    let phase = time * frequency * 2 * Float.pi()
+    2 * (phase / (2 * Float.pi()) - (phase / (2 * Float.pi()) + 0.5).floor())
+}
+
+triangle(time: Float, frequency: Float): Float {
+    let phase = time * frequency * 2 * Float.pi()
+    2 * (2 * (phase / (2 * Float.pi()) - (phase / (2 * Float.pi()) + 0.5).floor())).abs() - 1
 }
 
 
