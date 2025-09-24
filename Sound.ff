@@ -1,5 +1,91 @@
 sound(time: Float): Float {
-    let frequency = 440.0
+    noteSound(time, midiA(4)) + noteSound(time, midiC(4))
+}
+
+noteSound(time: Float, frequency: Float): Float {
     let phase = time * frequency * 2 * Float.pi()
     phase.sin()
+}
+
+
+// Notes (as named by the MIDI standard)
+
+midiC(octave: Int): Float {
+    midiNote(octave, 0.0)
+}
+
+midiCs(octave: Int): Float {
+    midiNote(octave, 1.0)
+}
+
+midiDb(octave: Int): Float {
+    midiCs(octave)
+}
+
+midiD(octave: Int): Float {
+    midiNote(octave, 2.0)
+}
+
+midiDs(octave: Int): Float {
+    midiNote(octave, 3.0)
+}
+
+midiEb(octave: Int): Float {
+    midiDs(octave)
+}
+
+midiE(octave: Int): Float {
+    midiNote(octave, 4.0)
+}
+
+midiF(octave: Int): Float {
+    midiNote(octave, 5.0)
+}
+
+midiFs(octave: Int): Float {
+    midiNote(octave, 6.0)
+}
+
+midiGb(octave: Int): Float {
+    midiFs(octave)
+}
+
+midiG(octave: Int): Float {
+    midiNote(octave, 7.0)
+}
+
+midiGs(octave: Int): Float {
+    midiNote(octave, 8.0)
+}
+
+midiAb(octave: Int): Float {
+    midiGs(octave)
+}
+
+midiA(octave: Int): Float {
+    midiNote(octave, 9.0)
+}
+
+midiAs(octave: Int): Float {
+    midiNote(octave, 10.0)
+}
+
+midiBb(octave: Int): Float {
+    midiAs(octave)
+}
+
+midiB(octave: Int): Float {
+    midiNote(octave, 11.0)
+}
+
+midiNote(octave: Int, semitone: Float): Float {
+    let note = 12 * (octave + 1) + semitone
+    440.0 * pow(2.0, ((note - 69) / 12))
+}
+
+
+// Utility functions
+
+pow(base: Float, exponent: Float): Float {
+    Js->Math->pow(base, exponent)?
 }

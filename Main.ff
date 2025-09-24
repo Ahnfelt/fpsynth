@@ -1,4 +1,5 @@
 import WebServer from ff:webserver
+import Sound
 
 nodeMain(system: NodeSystem): Unit {
     Log.debug("Starting server")
