@@ -1,7 +1,7 @@
 sound(time: Float): Float {
-    envelope(time, 1.0, triangle(time, midiC(4)), adsrEnvelope) +
-    envelope(time - 1.0, 1.0, triangle(time, midiD(4)), adsrEnvelope) +
-    envelope(time - 2.0, 1.0, triangle(time, midiE(4)), adsrEnvelope)
+    envelope(time, 1.0, sine(time, midiC(4)), adsrEnvelope) +
+    envelope(time - 1.0, 1.0, sine(time, midiD(4)), adsrEnvelope) +
+    envelope(time - 2.0, 1.0, sine(time, midiE(4)), adsrEnvelope)
 }
 
 
