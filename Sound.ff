@@ -80,7 +80,7 @@ midiB(octave: Int): Float {
 
 midiNote(octave: Int, semitone: Float): Float {
     // A4 is 440 Hz, also known as pitch standard
-    // Going up an octave doubles the frequency
+    // Going up an octave (e.g. A4 to A5) doubles the frequency
     let note = 12 * (octave + 1) + semitone
     440.0 * pow(2.0, ((note - 69) / 12))
 }
