@@ -34,6 +34,7 @@ class MyProcessor extends AudioWorkletProcessor {
         super()
         this.phase = 0
         this.sampleRate = sampleRate
+        this.sound = sound_()
     }
 
     process(inputs, outputs, parameters) {
@@ -43,7 +44,7 @@ class MyProcessor extends AudioWorkletProcessor {
             const outputChannel = output[channel]
             for(let i = 0; i < outputChannel.length; i++) {
                 const time = this.phase / this.sampleRate
-                outputChannel[i] = sound_(time)
+                outputChannel[i] = this.sound(time) 
                 this.phase++
             }
         }
