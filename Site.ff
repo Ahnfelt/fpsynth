@@ -1,19 +1,67 @@
 import Sound
+import Oscillograph
 
 browserMain(system: BrowserSystem) {
+    let document = system.js()->document
+
+    document->body->appendChild(document->createTextNode("Click to play!"))
+
+    let width: Int = document->body->clientWidth?
+    let graph1 = Oscillograph.make(document, Sound.sound, width, 200, 0.1)
+    document->body->appendChild(graph1.canvas)
+    rightAligned(document, "100 ms")
+
+    let graph2 = Oscillograph.make(document, Sound.sound, width, 200, 1.0)
+    document->body->appendChild(graph2.canvas)
+    rightAligned(document, "1 s")
+
+    let graph3 = Oscillograph.make(document, Sound.sound, width, 200, 10.0)
+    document->body->appendChild(graph3.canvas)
+    rightAligned(document, "10 s")
+
+    graph1.draw(0.0)
+    graph2.draw(0.0)
+    graph3.draw(0.0)
+
+    mutable playing = False
+    function play() {
+        playing = True
+        let started = system.mainTask().elapsed().seconds
+        mutable jsFunction = Js.null()
+        jsFunction = Js.function1 {jsEvent =>
+            if(playing) {
+                let time = system.mainTask().elapsed().seconds - started
+                graph1.draw(time)
+                graph2.draw(time)
+                graph3.draw(time)
+                Js->requestAnimationFrame(jsFunction)
+            }
+        }
+        Js->requestAnimationFrame(jsFunction)
+    }
+
     mutable customNode = Js.null()
-    Js->document->body->textContent = "Click to play!"
-    Js->document->addEventListener("click", Js->{
+    document->addEventListener("click", Js->{
         if(customNode.isNullOrUndefined()) {
             let audioContext = Js->AudioContext->()
             audioContext->audioWorklet->addModule("/js/AudioWorklet.mjs")->then(Js->{
                 customNode = Js->AudioWorkletNode->(audioContext, "custom-sound")
                 customNode->connect(audioContext->destination)
+                play()
             })
         } else {
             customNode->disconnect()
             customNode = Js.null()
+            playing = False
         }
         Js.undefined()
-    })
+    })    
+
+}
+
+rightAligned(document: JsValue, text: String) {
+    let div = document->createElement("div");
+    div->style->textAlign = "right"
+    div->appendChild(document->createTextNode(text))
+    document->body->appendChild(div)
 }

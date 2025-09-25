@@ -7,6 +7,7 @@ nodeMain(system: NodeSystem): Unit {
         if(request.readPath() == "/") {
             request.writeHeader("Content-Type", "text/html; charset=UTF-8")
             request.writeText("<!doctype html>")
+            request.writeText("<style>body{background: #170b22; color: #FFFF5A}</style>")
             request.writeText("<script type='module' src='/js/script/script/Site.run.mjs'></script>")
         } elseIf {request.readPath() == "/js/AudioWorklet.mjs"} {
             request.writeHeader("Content-Type", "text/javascript; charset=UTF-8")

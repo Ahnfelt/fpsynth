@@ -1,0 +1,67 @@
+capability Oscillograph(
+    signal: Float => Float
+    canvas: JsValue
+    context: JsValue
+    width: Int
+    height: Int
+    window: Float
+)
+
+make(
+    document: JsValue
+    signal: Float => Float
+    width: Int
+    height: Int
+    window: Float
+): Oscillograph {
+    let canvas = document->createElement("canvas")
+    canvas->width = "" + width
+    canvas->height = "" + height
+    canvas->style->display = "block"
+    canvas->style->marginTop = "15px"
+    //canvas->style->"image-rendering" = "pixelated"
+    let context = canvas->getContext("2d")
+    Oscillograph(
+        signal = signal
+        canvas = canvas
+        context = context
+        width = width
+        height = height
+        window = window
+    )
+
+}
+
+extend self: Oscillograph {
+
+    draw(offset: Float) {
+        self.context->clearRect(0, 0, self.width, self.height);
+        self.drawCoordinateSystem()
+        self.drawWave(offset)
+    }
+
+    drawWave(offset: Float) {
+        let c = self.context
+        let h = self.height * 0.5
+        c->strokeStyle = "#e920a8"
+        c->beginPath()
+        c->moveTo(0, 100)
+        0.until(self.width).each {x => 
+            let time = x.toFloat() / self.width
+            let a = self.signal(time * self.window + offset)
+            c->lineTo(x, h + a * h)
+        }
+        c->stroke()
+    }
+
+    drawCoordinateSystem() {
+        let c = self.context
+        let h = self.height * 0.5
+        c->strokeStyle = "#6fd7e3"
+        c->beginPath()
+        c->moveTo(0, h)
+        c->lineTo(self.width, h)
+        c->stroke()
+    }
+
+}
