@@ -27,6 +27,26 @@ triangle(time: Float, frequency: Float): Float {
     2 * (2 * (phase / (2 * Float.pi()) - (phase / (2 * Float.pi()) + 0.5).floor())).abs() - 1
 }
 
+unison(
+    waveform: (Float, Float) => Float
+    time: Float
+    frequency: Float
+    voices: Int = 3
+    detuneCents: Float = 5.0
+    outputGain: Float = 0.7
+): Float {
+    let detuneFactor = pow(2.0, detuneCents / 1200.0)
+    mutable output: Float = 0.0
+    0.until(voices).each {voice =>
+        let detuneDirection = if(voice % 2 == 0.0) {1.0} else {-1.0}
+        let detunedFreq = frequency * pow(detuneFactor, detuneDirection * voice / (voices - 1))
+        let phaseOffset = voice / voices
+        let phase = time * detunedFreq * 2 * Float.pi() + phaseOffset
+        output += waveform(phase, detunedFreq)
+    }
+    (output / voices) * outputGain
+}
+
 
 // Envelopes
 
