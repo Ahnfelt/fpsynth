@@ -1,7 +1,8 @@
 sound(time: Float): Float {
-    envelope(time, 1.0, adsrEnvelope) {sine(time, midiC(4))} +
-    envelope(time - 1.0, 1.0, adsrEnvelope) {sine(time, midiD(4))} +
-    envelope(time - 2.0, 1.0, adsrEnvelope) {sine(time, midiE(4))}
+    // unison(sawtooth, time, midiC(4))
+    envelope(time - 1.0, 1.0, adsrEnvelope) {sine(time, midiC(4))} +
+    envelope(time - 2.0, 1.0, adsrEnvelope) {sine(time, midiD(4))} +
+    envelope(time - 3.0, 1.0, adsrEnvelope) {sine(time, midiE(4))}
 }
 
 
@@ -40,7 +41,7 @@ unison(
     0.until(voices).each {voice =>
         let detuneDirection = if(voice % 2 == 0.0) {1.0} else {-1.0}
         let detunedFreq = frequency * pow(detuneFactor, detuneDirection * voice / (voices - 1))
-        let phaseOffset = voice / voices // Should probably be randomized 0..1 instead
+        let phaseOffset = (voice / voices) * 2 * Float.pi()
         let phase = time * detunedFreq * 2 * Float.pi() + phaseOffset
         output += waveform(phase, detunedFreq)
     }
