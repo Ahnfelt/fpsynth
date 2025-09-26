@@ -1,5 +1,6 @@
 import Sound
 import Oscillograph
+import Spectrograph
 
 browserMain(system: BrowserSystem) {
     let document = system.js()->document
@@ -19,9 +20,13 @@ browserMain(system: BrowserSystem) {
     document->body->appendChild(graph3.canvas)
     rightAligned(document, "10 s")
 
+    let graph4 = Spectrograph.make(document, Sound.sound, 1024, 200)
+    document->body->appendChild(graph4.canvas)
+
     graph1.draw(0.0)
     graph2.draw(0.0)
     graph3.draw(0.0)
+    graph4.draw(0.0)
 
     mutable playing = False
     function play() {
@@ -34,6 +39,7 @@ browserMain(system: BrowserSystem) {
                 graph1.draw(time)
                 graph2.draw(time)
                 graph3.draw(time)
+                graph4.draw(time)
                 Js->requestAnimationFrame(jsFunction)
             }
         }
@@ -56,7 +62,6 @@ browserMain(system: BrowserSystem) {
         }
         Js.undefined()
     })    
-
 }
 
 rightAligned(document: JsValue, text: String) {

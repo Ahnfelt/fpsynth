@@ -1,0 +1,77 @@
+nodeMain(system: NodeSystem) {
+    Log.show(spectrum([1.0, 1.0, 1.0, 1.0]).map {_.toFixed(4)}) // Expected [4.0, 0.0, 0.0, 0.0]
+    Log.show(spectrum([1.0, 0.0, -1.0, 0.0]).map {_.toFixed(4)}) // Expected [0.0, 2.0, 0.0, 2.0]
+    Log.show(spectrum([1.0, 0.0, 0.0, 0.0]).map {_.toFixed(4)}) // Expected [1.0, 1.0, 1.0, 1.0]
+}
+
+spectrum(input: List[Float]): List[Float] {
+    let raw = fft(input.map {x => Complex(x, 0.0)}).map {_.length()}
+    let maxVal = raw.sort().grabLast()
+    let n = raw.size()
+    let half = n.div(2)
+
+    if(maxVal == 0.0) {
+        raw.takeFirst(half)
+    } else {
+        raw.map {a => a / maxVal}.takeFirst(half)
+    }
+
+}
+
+
+fft(input: List[Complex]): List[Complex] {
+    let n = input.size()
+
+    if(n == 1) {
+        input
+    } elseIf {(n.bitAnd(n - 1)) != 0} {
+        throw("Length must be power of 2")
+    } else:
+
+    let even = List.fillBy(n.div(2), {i => input.grab(2 * i)})
+    let odd = List.fillBy(n.div(2), {i => input.grab(2 * i + 1)})
+
+    let fftEven = fft(even)
+    let fftOdd  = fft(odd)
+
+    let top = List.fillBy(n.div(2), {k =>
+        let angle = -2.0 * Float.pi() * k / n
+        let twiddle = Complex(angle.cos(), angle.sin())
+        fftEven.grab(k).plus(twiddle.mul(fftOdd.grab(k)))
+    })
+
+    let bottom = List.fillBy(n.div(2), {k =>
+        let angle = -2.0 * Float.pi() * k / n
+        let twiddle = Complex(angle.cos(), angle.sin())
+        fftEven.grab(k).minus(twiddle.mul(fftOdd.grab(k)))
+    })
+
+    [...top, ...bottom]
+}
+
+class Complex(re: Float, im: Float)
+
+extend self: Complex {
+    show(): String {
+        "(" + self.re.toFixed(4) + " + " + self.im.toFixed(4) + "i)"
+    }
+
+    plus(other: Complex): Complex {
+        Complex(self.re + other.re, self.im + other.im)
+    }
+
+    minus(other: Complex): Complex {
+        Complex(self.re - other.re, self.im - other.im)
+    }
+
+    mul(other: Complex): Complex {
+        Complex(
+            self.re * other.re - self.im * other.im
+            self.re * other.im + self.im * other.re
+        )
+    }
+
+    length(): Float {
+        (self.re * self.re + self.im * self.im).sqrt()
+    }
+}

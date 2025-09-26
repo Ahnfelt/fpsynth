@@ -1,10 +1,11 @@
-capability Oscillograph(
+import Fft
+
+capability Spectrograph(
     signal: Float => Float
     canvas: JsValue
     context: JsValue
     width: Int
     height: Int
-    window: Float
 )
 
 make(
@@ -12,51 +13,50 @@ make(
     signal: Float => Float
     width: Int
     height: Int
-    window: Float
-): Oscillograph {
+): Spectrograph {
     let canvas = document->createElement("canvas")
     canvas->width = "" + width
     canvas->height = "" + height
     canvas->style->display = "block"
     canvas->style->marginTop = "15px"
-    //canvas->style->"image-rendering" = "pixelated"
     let context = canvas->getContext("2d")
-    Oscillograph(
+    Spectrograph(
         signal = signal
         canvas = canvas
         context = context
         width = width
         height = height
-        window = window
     )
-
 }
 
-extend self: Oscillograph {
+extend self: Spectrograph {
 
-    draw(offset: Float) {
+    draw(time: Float) {
         self.context->clearRect(0, 0, self.width, self.height);
-        self.drawWave(offset)
+        self.drawSpectrum(time)
         self.drawCoordinateSystem()
     }
 
-    drawWave(offset: Float) {
+    drawSpectrum(time: Float) {
+        let dt = 1/44000
+        let samples = 0.until(self.width * 2).reverse().map {i => 
+            self.signal(time - i * dt)
+        }
+        let spectrum = Fft.spectrum(samples)
         let c = self.context
-        let h = self.height * 0.5
+        let h = self.height
         c->strokeStyle = "#e920a8"
         c->beginPath()
-        c->moveTo(0, 100)
-        0.until(self.width).each {x => 
-            let time = x.toFloat() / self.width
-            let a = self.signal(time * self.window + offset)
-            c->lineTo(x, h + a * h)
+        spectrum.pairs().each {| Pair(x, a) => 
+            c->moveTo(x, h)
+            c->lineTo(x, h * (1 - a))
         }
         c->stroke()
     }
 
     drawCoordinateSystem() {
         let c = self.context
-        let h = self.height * 0.5
+        let h = self.height - 1
         c->strokeStyle = "#6fd7e3"
         c->beginPath()
         c->moveTo(0, h)
