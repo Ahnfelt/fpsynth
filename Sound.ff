@@ -1,7 +1,8 @@
 sound(time: Float): Float {
-    envelope(time - 1.0, 1.0, adsrEnvelope) {square(time, midiC(4))} +
+    song(time)
+    /*envelope(time - 1.0, 1.0, adsrEnvelope) {square(time, midiC(4))} +
     envelope(time - 2.0, 1.0, adsrEnvelope) {sawtooth(time, midiD(4))} +
-    envelope(time - 3.0, 1.0, adsrEnvelope) {sine(time, midiE(4))}
+    envelope(time - 3.0, 1.0, adsrEnvelope) {sine(time, midiE(4))}*/
 }
 
 
