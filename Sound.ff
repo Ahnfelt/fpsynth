@@ -1,8 +1,33 @@
 sound(time: Float): Float {
-    // unison(sawtooth, time, midiC(4))
     envelope(time - 1.0, 1.0, adsrEnvelope) {square(time, midiC(4))} +
     envelope(time - 2.0, 1.0, adsrEnvelope) {sawtooth(time, midiD(4))} +
     envelope(time - 3.0, 1.0, adsrEnvelope) {sine(time, midiE(4))}
+}
+
+
+// Song
+
+song(time: Float): Float {
+    0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
+    0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
+}
+
+smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
+    envelope(time, duration, adsrEnvelope) {smoothTooth(time, frequency)}
+}
+
+progressionIxVxvixIV(time: Float, play: (Float, Float, Float) => Float): Float {
+    play(time - 0.0, 0.5, midiC(4)) + play(time - 0.0, 0.5, midiE(4)) + play(time - 0.5, 0.5, midiG(4)) +
+    play(time - 1.0, 0.5, midiB(3)) + play(time - 1.0, 0.5, midiD(4)) + play(time - 1.5, 0.5, midiG(4)) +
+    play(time - 2.0, 0.5, midiC(4)) + play(time - 2.0, 0.5, midiE(4)) + play(time - 2.5, 0.5, midiA(4)) +
+    play(time - 3.0, 0.5, midiC(4)) + play(time - 3.0, 0.5, midiF(4)) + play(time - 3.5, 0.5, midiA(4))
+}
+
+progressionvixIVxIxV(time: Float, play: (Float, Float, Float) => Float): Float {
+    play(time - 0.0, 0.5, midiC(4)) + play(time - 0.0, 0.5, midiE(4)) + play(time - 0.5, 0.5, midiA(4)) +
+    play(time - 1.0, 0.5, midiC(4)) + play(time - 1.0, 0.5, midiF(4)) + play(time - 1.5, 0.5, midiA(4)) +
+    play(time - 2.0, 0.5, midiC(4)) + play(time - 2.0, 0.5, midiE(4)) + play(time - 2.5, 0.5, midiG(4)) +
+    play(time - 3.0, 0.5, midiB(3)) + play(time - 3.0, 0.5, midiD(4)) + play(time - 3.5, 0.5, midiG(4))
 }
 
 
@@ -11,6 +36,11 @@ sound(time: Float): Float {
 sine(time: Float, frequency: Float): Float {
     let phase = time * frequency * 2 * Float.pi()
     phase.sin()
+}
+
+triangle(time: Float, frequency: Float): Float {
+    let phase = time * frequency * 2 * Float.pi()
+    2 * (2 * (phase / (2 * Float.pi()) - (phase / (2 * Float.pi()) + 0.5).floor())).abs() - 1
 }
 
 square(time: Float, frequency: Float): Float {
@@ -23,9 +53,11 @@ sawtooth(time: Float, frequency: Float): Float {
     2 * (phase / (2 * Float.pi()) - (phase / (2 * Float.pi()) + 0.5).floor())
 }
 
-triangle(time: Float, frequency: Float): Float {
+smoothTooth(time: Float, frequency: Float): Float {
     let phase = time * frequency * 2 * Float.pi()
-    2 * (2 * (phase / (2 * Float.pi()) - (phase / (2 * Float.pi()) + 0.5).floor())).abs() - 1
+    let newTime = time + phase.sin() / (frequency * 2 * Float.pi())
+    let newPhase = newTime * frequency * 2 * Float.pi()
+    newPhase.sin()
 }
 
 unison(
@@ -47,7 +79,6 @@ unison(
     }
     (output / voices) * outputGain
 }
-
 
 // Envelopes
 
