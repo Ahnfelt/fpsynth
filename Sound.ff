@@ -138,6 +138,11 @@ soften(time: Float, sound: Float => Float): Float {
     (3 * sound(time)).atan() * 2 / Float.pi() 
 }
 
+tremolo(time: Float, frequency: Float = 8, sound: Float => Float): Float {
+    let phase = time * frequency * 2 * Float.pi()
+    sound(time) * (0.75 + 0.25 * phase.sin())
+}
+
 
 // Envelopes
 
