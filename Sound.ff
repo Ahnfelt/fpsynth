@@ -1,21 +1,50 @@
-import Sound
 sound(time: Float): Float {
     song(time)
-    /*envelope(time - 1.0, 1.0, adsrEnvelope) {square(time, midiC(4))} +
-    envelope(time - 2.0, 1.0, adsrEnvelope) {sawtooth(time, midiD(4))} +
-    envelope(time - 3.0, 1.0, adsrEnvelope) {sine(time, midiE(4))}*/
 }
 
 
 // Song
 
 song(time: Float): Float {
-    0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
-    0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
+    /*echo(0.2, time) {time =>
+        0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
+        0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
+    }*/
+    0.5 * progressionBase(time, bassInstrument)
 }
 
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
-    envelope(time, duration, adsrEnvelope) {smoothTooth(time, frequency)}
+    envelope(time, duration, adsrEnvelope) {
+        smoothTooth(time, frequency)
+    }
+}
+
+bassInstrument(time: Float, duration: Float, frequency: Float): Float {
+    envelope(time, duration, {adsrEnvelope(_, _, attack = 0.04, decay = 0.1, sustain = 0.3, release = 0.56, sustainLevel = 0.3)}) {
+        softClip(time) {time =>
+            harmonic(time) {time =>
+                harmonic(time) {time =>
+                    smoothTooth(time, frequency) + sine(time, frequency / 2)
+                }
+            }
+        }
+    }
+}
+
+progressionBase(time: Float, play: (Float, Float, Float) => Float): Float {
+    function multi(time: Float, frequency: Float): Float {
+        play(time - 0.25, 0.5, frequency) +
+        play(time - 0.50, 0.5, frequency) +
+        play(time - 0.75, 0.5, frequency)
+    }
+    multi(time - 0.0, midiC(3)) + 
+    multi(time - 1.0, midiB(2)) + 
+    multi(time - 2.0, midiC(3)) + 
+    multi(time - 3.0, midiC(3)) + 
+    multi(time - 4.0, midiC(3)) + 
+    multi(time - 5.0, midiC(3)) + 
+    multi(time - 6.0, midiC(3)) + 
+    multi(time - 7.0, midiB(2))
 }
 
 progressionIxVxvixIV(time: Float, play: (Float, Float, Float) => Float): Float {
@@ -86,13 +115,27 @@ robot(time: Float, sound: Float => Float): Float {
     sound(time) * phase.sin()
 }
 
-clipping(time: Float, sound: Float => Float): Float {
-    (sound(time) * 2).clamp(-1.0, 1.0)
-}
-
 harmonic(time: Float, sound: Float => Float): Float {
     sound(time) + 0.3 * sound(time * 2) + 0.1 * sound(time * 3)
 }
+
+pedal(distortion: Float, time: Float, sound: Float => Float): Float {
+    (distortion * sound(time)).tanh()
+}
+
+hardClip(time: Float, sound: Float => Float): Float {
+    (sound(time) * 1.5).clamp(-1.0, 1.0)
+}
+
+softClip(time: Float, sound: Float => Float): Float {
+    let amplitude = sound(time)
+    amplitude - (amplitude * amplitude * amplitude / 3)
+}
+
+soften(time: Float, sound: Float => Float): Float {
+    (10 * sound(time)).atan() * 2 / Float.pi() 
+}
+
 
 // Envelopes
 
