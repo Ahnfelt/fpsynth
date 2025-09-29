@@ -6,12 +6,12 @@ sound(time: Float): Float {
 // Song
 
 song(time: Float): Float {
-    echo(0.3, time) {time =>
+    /*echo(0.3, time) {time =>
         0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
         0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
     } + 
-    0.8 * snarePattern(time)
-    //0.5 * progressionBase(time, bassInstrument)
+    0.8 * snarePattern(time)*/
+    0.5 * progressionBase(time, bassInstrument)
 }
 
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
@@ -189,7 +189,7 @@ soften(time: Float, sound: Float => Float): Float {
     (3 * sound(time)).atan() * 2 / Float.pi() 
 }
 
-tremolo(time: Float, frequency: Float = 8, sound: Float => Float): Float {
+tremolo(time: Float, frequency: Float = 8.0, sound: Float => Float): Float {
     let phase = time * frequency * 2 * Float.pi()
     sound(time) * (0.75 + 0.25 * phase.sin())
 }
