@@ -7,11 +7,11 @@ sound(time: Float): Float {
 
 song(time: Float): Float {
     echo(0.3, time) {time =>
-        0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
-        0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
+        0.5 * progressionIxVxvixIV(time, experimentalInstrument) +
+        0.5 * progressionvixIVxIxV(time - 4.0, experimentalInstrument)
     } + 
-    0.8 * snarePattern(time)
-    //0.5 * progressionBase(time, bassInstrument)
+    0.5 * snarePattern(time) + 
+    0.5 * progressionBass(time, bassInstrument)
 }
 
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
