@@ -1,0 +1,93 @@
+import Fft
+
+capability Spectrograph(
+    signal: Float => Float
+    canvas: JsValue
+    context: JsValue
+    width: Int
+    height: Int
+)
+
+make(
+    document: JsValue
+    signal: Float => Float
+    width: Int
+    height: Int
+): Spectrograph {
+    let canvas = document->createElement("canvas")
+    canvas->width = "" + width
+    canvas->height = "" + height
+    canvas->style->display = "block"
+    canvas->style->marginTop = "15px"
+    let context = canvas->getContext("2d")
+    Spectrograph(
+        signal = signal
+        canvas = canvas
+        context = context
+        width = width
+        height = height
+    )
+}
+
+extend self: Spectrograph {
+
+    draw(time: Float) {
+        self.context->clearRect(0, 0, self.width, self.height);
+        self.drawSpectrum(time)
+        self.drawCoordinateSystem()
+    }
+
+    drawSpectrum(time: Float) {
+        let sampleRate = 44100
+        let dt = 1/sampleRate
+        let samples = 0.until(8192).reverse().map {i => 
+            self.signal(time - i * dt)
+        }
+        let spectrum = Fft.spectrum(samples)
+        let logSpectrum = octaveBands(spectrum, sampleRate)
+        //Log.show(logSpectrum.map {_.toFixed(3)})
+        let c = self.context
+        let h = self.height
+        let barWidth = (self.width / logSpectrum.size()).floor()
+        c->fillStyle = "#e920a8"
+        c->beginPath()
+        logSpectrum.pairs().each {| Pair(x, a) => 
+            c->rect(x * barWidth, h * (1 - a), barWidth, h * a)
+        }
+        c->fill()
+    }
+
+    drawCoordinateSystem() {
+        let c = self.context
+        let h = self.height - 1
+        c->strokeStyle = "#6fd7e3"
+        c->beginPath()
+        c->moveTo(0, h)
+        c->lineTo(self.width, h)
+        c->stroke()
+    }
+
+}
+
+octaveBands(amps: List[Float], sampleRate: Int): List[Float] {
+    let deltaF = sampleRate / (amps.size() * 2)
+    let nyquist = sampleRate / 2.0
+    let frequencies = amps.pairs().map {| Pair(i, a) => Pair(i * deltaF, a)}
+    let bands = Array.new()
+    mutable f = 20.0
+    while {f < nyquist} {
+        let next = f * pow(2.0, 1.0/12.0)
+        let bandAmps = frequencies.filter {| Pair(fStart, a) => fStart >= f && fStart < next}.map {_.second}
+        if(bandAmps.size() > 0) {
+            bands.push(bandAmps.sort().grabLast()) // Max
+        } else {
+            bands.push(0.0)
+        }
+        f = next
+    }
+    bands.drain()
+}
+
+pow(base: Float, exponent: Float): Float {
+    Js->Math->pow(base, exponent)?
+}
