@@ -9,7 +9,8 @@ song(time: Float): Float {
     echo(0.3, time) {time =>
         0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
         0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
-    }
+    } + 
+    0.8 * snarePattern(time)
     //0.5 * progressionBase(time, bassInstrument)
 }
 
@@ -71,6 +72,59 @@ progressionvixIVxIxV(time: Float, play: (Float, Float, Float) => Float): Float {
         play(time - 3.0, 0.5, midiD(4)) + play(time - 3.5, 0.5, midiG(4))
 }
 
+
+// Drumms
+
+snareInstrument(time: Float, duration: Float, frequency: Float): Float {
+
+    function noise(time: Float): Float {
+        Random.newFromFloat(time).nextFloat(-1.0, 1.0)
+    }
+
+    // Pitch envelope: starts at 3x frequency, drops down quickly
+    let pitchEnv = 1.0 + 2.0 * (-time * 80.0).exp()
+
+    // Body: short, pitch-falling sine wave
+    let body = adsrEnvelope(
+        time
+        duration
+        attack = 0.001
+        decay = 0.07
+        sustain = 0.0
+        release = 0.05
+        amplitude = {sine(time, frequency * pitchEnv)}
+    )
+
+    // Snare noise: classic noise burst
+    let snare = adsrEnvelope(
+        time
+        duration
+        attack = 0.0
+        decay = 0.15
+        sustain = 0.0
+        release = 0.07
+        amplitude = {noise(time)}
+    )
+
+    // Attack click: very short high-passed noise
+    let click = adsrEnvelope(
+        time
+        duration = 0.02
+        attack = 0.0
+        decay = 0.02
+        sustain = 0.0
+        release = 0.01
+        amplitude = {noise(time + 1)}
+    )
+
+    // Mix the layers
+    0.6 * body + 0.8 * snare + 0.8 * click
+}
+
+snarePattern(time: Float): Float {
+    snareInstrument(time - 1.0, 0.3, 200.0) + 
+    snareInstrument(time - 3.0, 0.3, 200.0)
+}
 
 // Waveforms
 
