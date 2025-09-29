@@ -10,8 +10,10 @@ song(time: Float): Float {
         0.5 * progressionIxVxvixIV(time, experimentalInstrument) +
         0.5 * progressionvixIVxIxV(time - 4.0, experimentalInstrument)
     } + 
+    0.5 * progressionBass(time, bassInstrument) +
     0.5 * snarePattern(time) + 
-    0.5 * progressionBass(time, bassInstrument)
+    0.5 * kickPattern(time) + 
+    0.5 * hiHatPattern(time)
 }
 
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
@@ -117,10 +119,78 @@ snareInstrument(time: Float, duration: Float, frequency: Float): Float {
     0.6 * body + 0.8 * snare
 }
 
-snarePattern(time: Float): Float {
-    snareInstrument(time % 4 - 1.0, 0.3, 200.0) + 
-    snareInstrument(time % 4 - 3.0, 0.3, 200.0)
+hiHatInstrument(time: Float, duration: Float): Float {
+
+    function noise(time: Float): Float {
+        Random.newFromFloat(time).nextFloat(-1.0, 1.0)
+    }
+
+    let hat = adsrEnvelope(
+        time
+        duration
+        attack = 0.001
+        decay = 0.05
+        sustain = 0.0
+        release = 0.01
+        amplitude = {noise(time)}
+    )
+
+    let metallic = adsrEnvelope(
+        time
+        duration
+        attack = 0.001
+        decay = 0.05
+        sustain = 0.0
+        release = 0.01
+        amplitude = {triangle(time, 8000.0) * 0.3}
+    )
+
+    hat + metallic
 }
+
+kickInstrument(time: Float, duration: Float, frequency: Float): Float {
+
+    // Drops from 2.5 to 1 quickly
+    let pitchEnvelope = 1.0 + 1.5 * (-time * 20.0).exp()
+    let body = adsrEnvelope(
+        time
+        duration
+        attack = 0.001
+        decay = 0.2
+        sustain = 0.0
+        release = 0.05
+        amplitude = {sine(time, frequency * pitchEnvelope)}
+    )
+
+    let punch = adsrEnvelope(
+        time
+        duration
+        attack = 0.0
+        decay = 0.05
+        sustain = 0.0
+        release = 0.01
+        amplitude = {softClip(time) {_ => 
+            0.3 * sine(time, frequency * pitchEnvelope * 2)
+        }}
+    )
+
+    body + punch
+}
+
+snarePattern(time: Float): Float {
+    snareInstrument(time % 1 - 0.5, 0.3, 200.0)
+}
+
+kickPattern(time: Float): Float {
+    kickInstrument(time % 1, 0.4, 60.0) + 
+    kickInstrument((time % 2) - 0.75, 0.4, 60.0) * 0.8
+
+}
+
+hiHatPattern(time: Float): Float {
+    hiHatInstrument((time * 4) % 1, 0.05)
+}
+
 
 // Waveforms
 
