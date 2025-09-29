@@ -92,9 +92,8 @@ snareInstrument(time: Float, duration: Float, frequency: Float): Float {
         Random.newFromFloat(time).nextFloat(-1.0, 1.0)
     }
 
-    // Starts at 3, drops down to 1 quickly
+    // Drops from 3 to 1 quickly
     let pitchEnvelope = 1.0 + 2.0 * (-time * 80.0).exp()
-
     let body = adsrEnvelope(
         time
         duration
@@ -115,22 +114,12 @@ snareInstrument(time: Float, duration: Float, frequency: Float): Float {
         amplitude = {noise(time)}
     )
 
-    let click = adsrEnvelope(
-        time
-        duration = 0.02
-        attack = 0.0
-        decay = 0.02
-        sustain = 0.0
-        release = 0.01
-        amplitude = {noise(time + 1)}
-    )
-
-    0.6 * body + 0.8 * snare + 0.8 * click
+    0.6 * body + 0.8 * snare
 }
 
 snarePattern(time: Float): Float {
-    snareInstrument(time - 1.0, 0.3, 200.0) + 
-    snareInstrument(time - 3.0, 0.3, 200.0)
+    snareInstrument(time % 4 - 1.0, 0.3, 200.0) + 
+    snareInstrument(time % 4 - 3.0, 0.3, 200.0)
 }
 
 // Waveforms
