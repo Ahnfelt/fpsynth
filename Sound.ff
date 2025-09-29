@@ -17,6 +17,7 @@ song(time: Float): Float {
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
     adsrEnvelope(time, duration, amplitude = {
         //harmonic(time) {time =>
+            //vibrato(time, frequency, waveform = smoothTooth)
             smoothTooth(time, frequency)
         //}
     })
@@ -197,6 +198,18 @@ tremolo(time: Float, frequency: Float = 8, sound: Float => Float): Float {
     sound(time) * (0.75 + 0.25 * phase.sin())
 }
 
+vibrato(
+    time: Float
+    frequency: Float
+    depth: Float = 0.01
+    rate: Float = 6.0
+    waveform: (Float, Float) => Float
+): Float {
+    let mod = time * rate * 2 * Float.pi()
+    let pitchBend = depth * mod.sin()
+    let modulatedFreq = frequency * pow(2.0, pitchBend)
+    waveform(time, modulatedFreq)
+}
 
 // Envelopes
 
