@@ -6,21 +6,21 @@ sound(time: Float): Float {
 // Song
 
 song(time: Float): Float {
-    echo(0.3, time) {time =>
+    /*echo(0.3, time) {time =>
         0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
         0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
-    }
-    // 0.5 * progressionBase(time, bassInstrument)
+    }*/
+    0.5 * progressionBase(time, bassInstrument)
 }
 
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
-    envelope(time, duration, adsrEnvelope) {
+    adsrEnvelope(time, duration, amplitude = {
         smoothTooth(time, frequency)
-    }
+    })
 }
 
 bassInstrument(time: Float, duration: Float, frequency: Float): Float {
-    envelope(time, duration, {adsrEnvelope(_, _, attack = 0.04, decay = 0.1, sustain = 0.3, release = 0.56, sustainLevel = 0.3)}) {
+    adsrEnvelope(time, duration, attack = 0.02, decay = 0.2, sustain = 0.25, release = 0.2) {
         softClip(time) {time =>
             harmonic(time) {time =>
                 harmonic(time) {time =>
@@ -133,48 +133,33 @@ softClip(time: Float, sound: Float => Float): Float {
 }
 
 soften(time: Float, sound: Float => Float): Float {
-    (10 * sound(time)).atan() * 2 / Float.pi() 
+    (3 * sound(time)).atan() * 2 / Float.pi() 
 }
 
 
 // Envelopes
-
-envelope(time: Float, duration: Float, envelope: (Float, Float) => Float, amplitude: () => Float): Float {
-    if(time < 0.0 || time > duration) {0.0} else {
-        amplitude() * envelope(time, duration)
-    }
-}
-
-linearEnvelope(time: Float, duration: Float): Float {
-    let half = duration / 2.0
-    if(time < half) {
-        time / half
-    } else {
-        1.0 - (time - half) / half
-    }
-}
 
 adsrEnvelope(
     time: Float
     duration: Float
     attack: Float = 0.1
     decay: Float = 0.2
-    sustain: Float = 0.5
+    sustain: Float = 0.7
     release: Float = 0.2
-    sustainLevel: Float = 0.7
+    amplitude: () => Float
 ): Float {
-    let attackTime = attack * duration
-    let decayTime = decay * duration
-    let releaseTime = release * duration
-    let sustainEnd = duration - releaseTime
-    if(time < attackTime) {
-        time / attackTime
-    } elseIf {time < attackTime + decayTime} {
-        1.0 - (1.0 - sustainLevel) * (time - attackTime) / decayTime
-    } elseIf {time < sustainEnd} {
-        sustainLevel
+    if(time < 0.0) {
+        0.0
+    } elseIf {time < attack} {
+        amplitude() * (time / attack)
+    } elseIf {time < attack + decay} {
+        amplitude() * (1.0 - (1.0 - sustain) * (time - attack) / decay)
+    } elseIf {time < duration} {
+        amplitude() * sustain
+    } elseIf {time < duration + release} {
+        amplitude() * sustain * (1.0 - (time - duration) / release)
     } else {
-        sustainLevel * (1.0 - (time - sustainEnd) / releaseTime)
+        0.0
     }
 }
 
