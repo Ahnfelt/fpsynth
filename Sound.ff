@@ -108,8 +108,8 @@ snareInstrument(time: Float, duration: Float, frequency: Float): Float {
 }
 
 snarePattern(time: Float): Float {
-    snareInstrument(time - 1.0, 0.3, 200.0) + 
-    snareInstrument(time - 3.0, 0.3, 200.0)
+    snareInstrument(time % 4 - 1.0, 0.3, 200.0) + 
+    snareInstrument(time % 4 - 3.0, 0.3, 200.0)
 }
 
 // Waveforms
