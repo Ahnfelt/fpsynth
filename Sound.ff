@@ -6,16 +6,18 @@ sound(time: Float): Float {
 // Song
 
 song(time: Float): Float {
-    /*echo(0.3, time) {time =>
+    echo(0.3, time) {time =>
         0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
         0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
-    }*/
-    0.5 * progressionBase(time, bassInstrument)
+    }
+    //0.5 * progressionBase(time, bassInstrument)
 }
 
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
     adsrEnvelope(time, duration, amplitude = {
-        smoothTooth(time, frequency)
+        //harmonic(time) {time =>
+            smoothTooth(time, frequency)
+        //}
     })
 }
 
