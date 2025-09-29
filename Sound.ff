@@ -23,6 +23,16 @@ smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
     })
 }
 
+experimentalInstrument(time: Float, duration: Float, frequency: Float): Float {
+    adsrEnvelope(time, duration, attack = 0.01, decay = 0.5, sustain = 0.5, release = 0.3) {
+        softClip(time) {time =>
+            harmonic(time) {time =>
+                smoothTooth(time, frequency) + sine(time, frequency / 2)
+            }
+        }
+    }
+}
+
 bassInstrument(time: Float, duration: Float, frequency: Float): Float {
     adsrEnvelope(time, duration, attack = 0.02, decay = 0.2, sustain = 0.25, release = 0.2) {
         softClip(time) {time =>
@@ -35,7 +45,7 @@ bassInstrument(time: Float, duration: Float, frequency: Float): Float {
     }
 }
 
-progressionBase(time: Float, play: (Float, Float, Float) => Float): Float {
+progressionBass(time: Float, play: (Float, Float, Float) => Float): Float {
     function multi(time: Float, frequency: Float): Float {
         play(time - 0.25, 0.5, frequency) +
         play(time - 0.50, 0.5, frequency) +
