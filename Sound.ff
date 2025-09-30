@@ -1,3 +1,15 @@
+// 1. Waveforms
+// 2. Envelopes
+// 3. Beats per second / multiple sounds
+// 4. Musical notes
+// 5. Effects
+// 6. Instruments
+// 7. Progressions
+// 8. Bass
+// 9. Percussion
+
+
+
 sound(time: Float): Float {
     song(time)
 }
@@ -216,6 +228,20 @@ sawtooth(time: Float, frequency: Float): Float {
 smoothTooth(time: Float, frequency: Float): Float {
     let phase = time * frequency * 2 * Float.pi()
     let newTime = time + phase.sin() / (frequency * 2 * Float.pi())
+    let newPhase = newTime * frequency * 2 * Float.pi()
+    newPhase.sin()
+}
+
+betterSmoothTooth(time: Float, frequency: Float): Float {
+    let phase = time * frequency * 2 * Float.pi()
+    let newTime = time + phase.sin() / (frequency * 2 * Float.pi()) * 2
+    let newPhase = newTime * frequency * 2 * Float.pi()
+    newPhase.sin()
+}
+
+continuousNoise(time: Float, frequency: Float): Float {
+    let phase = time * frequency * 2 * Float.pi()
+    let newTime = time + smoothTooth(time, frequency)
     let newPhase = newTime * frequency * 2 * Float.pi()
     newPhase.sin()
 }
