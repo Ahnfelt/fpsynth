@@ -64,25 +64,25 @@ progressionBass(time: Float, play: (Float, Float, Float) => Float): Float {
 }
 
 progressionIxVxvixIV(time: Float, play: (Float, Float, Float) => Float): Float {
-    play(time - 0.0, 0.5, midiC(4)) + 
-        play(time - 0.0, 0.5, midiE(4)) + play(time - 0.5, 0.5, midiG(4)) +
-    play(time - 1.0, 0.5, midiB(3)) + 
-        play(time - 1.0, 0.5, midiD(4)) + play(time - 1.5, 0.5, midiG(4)) +
-    play(time - 2.0, 0.5, midiC(4)) + 
-        play(time - 2.0, 0.5, midiE(4)) + play(time - 2.5, 0.5, midiA(4)) +
-    play(time - 3.0, 0.5, midiC(4)) + 
-        play(time - 3.0, 0.5, midiF(4)) + play(time - 3.5, 0.5, midiA(4))
+    play(time - 0.0, 0.5, midiC(4)) + play(time - 0.0, 0.5, midiE(4)) + 
+    play(time - 0.5, 0.5, midiG(4)) +
+    play(time - 1.0, 0.5, midiB(3)) + play(time - 1.0, 0.5, midiD(4)) + 
+    play(time - 1.5, 0.5, midiG(4)) +
+    play(time - 2.0, 0.5, midiC(4)) + play(time - 2.0, 0.5, midiE(4)) + 
+    play(time - 2.5, 0.5, midiA(4)) +
+    play(time - 3.0, 0.5, midiC(4)) + play(time - 3.0, 0.5, midiF(4)) + 
+    play(time - 3.5, 0.5, midiA(4))
 }
 
 progressionvixIVxIxV(time: Float, play: (Float, Float, Float) => Float): Float {
-    play(time - 0.0, 0.5, midiC(4)) + 
-        play(time - 0.0, 0.5, midiE(4)) + play(time - 0.5, 0.5, midiA(4)) +
-    play(time - 1.0, 0.5, midiC(4)) + 
-        play(time - 1.0, 0.5, midiF(4)) + play(time - 1.5, 0.5, midiA(4)) +
-    play(time - 2.0, 0.5, midiC(4)) + 
-        play(time - 2.0, 0.5, midiE(4)) + play(time - 2.5, 0.5, midiG(4)) +
-    play(time - 3.0, 0.5, midiB(3)) + 
-        play(time - 3.0, 0.5, midiD(4)) + play(time - 3.5, 0.5, midiG(4))
+    play(time - 0.0, 0.5, midiC(4)) + play(time - 0.0, 0.5, midiE(4)) + 
+    play(time - 0.5, 0.5, midiA(4)) +
+    play(time - 1.0, 0.5, midiC(4)) + play(time - 1.0, 0.5, midiF(4)) + 
+    play(time - 1.5, 0.5, midiA(4)) +
+    play(time - 2.0, 0.5, midiC(4)) + play(time - 2.0, 0.5, midiE(4)) + 
+    play(time - 2.5, 0.5, midiG(4)) +
+    play(time - 3.0, 0.5, midiB(3)) + play(time - 3.0, 0.5, midiD(4)) + 
+    play(time - 3.5, 0.5, midiG(4))
 }
 
 
@@ -102,7 +102,7 @@ snareInstrument(time: Float, duration: Float, frequency: Float): Float {
         attack = 0.001
         decay = 0.07
         sustain = 0.0
-        release = 0.05
+        release = 0.0
         amplitude = {sine(time, frequency * pitchEnvelope)}
     )
 
@@ -112,7 +112,7 @@ snareInstrument(time: Float, duration: Float, frequency: Float): Float {
         attack = 0.0
         decay = 0.15
         sustain = 0.0
-        release = 0.07
+        release = 0.0
         amplitude = {noise(time)}
     )
 
@@ -131,7 +131,7 @@ hiHatInstrument(time: Float, duration: Float): Float {
         attack = 0.001
         decay = 0.05
         sustain = 0.0
-        release = 0.01
+        release = 0.0
         amplitude = {noise(time)}
     )
 
@@ -141,7 +141,7 @@ hiHatInstrument(time: Float, duration: Float): Float {
         attack = 0.001
         decay = 0.05
         sustain = 0.0
-        release = 0.01
+        release = 0.0
         amplitude = {triangle(time, 8000.0) * 0.3}
     )
 
@@ -158,7 +158,7 @@ kickInstrument(time: Float, duration: Float, frequency: Float): Float {
         attack = 0.001
         decay = 0.2
         sustain = 0.0
-        release = 0.05
+        release = 0.0
         amplitude = {sine(time, frequency * pitchEnvelope)}
     )
 
@@ -168,7 +168,7 @@ kickInstrument(time: Float, duration: Float, frequency: Float): Float {
         attack = 0.0
         decay = 0.05
         sustain = 0.0
-        release = 0.01
+        release = 0.0
         amplitude = {softClip(time) {_ => 
             0.3 * sine(time, frequency * pitchEnvelope * 2)
         }}
@@ -182,9 +182,8 @@ snarePattern(time: Float): Float {
 }
 
 kickPattern(time: Float): Float {
-    kickInstrument(time % 1, 0.4, 60.0) + 
-    kickInstrument((time % 2) - 0.75, 0.4, 60.0) * 0.8
-
+    0.8 * kickInstrument((time % 2) - 0.75, 0.4, 60.0) +
+    1.0 * kickInstrument(time % 1, 0.4, 60.0)
 }
 
 hiHatPattern(time: Float): Float {
