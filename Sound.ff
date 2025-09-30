@@ -10,10 +10,10 @@ song(time: Float): Float {
         0.5 * progressionIxVxvixIV(time, experimentalInstrument) +
         0.5 * progressionvixIVxIxV(time - 4.0, experimentalInstrument)
     } + 
-    0.5 * progressionBass(time, bassInstrument) +
-    0.5 * snarePattern(time) + 
-    0.5 * kickPattern(time) + 
-    0.5 * hiHatPattern(time)
+    0.4 * progressionBass(time, bassInstrument) +
+    0.3 * snarePattern(time) + 
+    0.3 * kickPattern(time) + 
+    0.3 * hiHatPattern(time)
 }
 
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
