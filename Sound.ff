@@ -1,15 +1,3 @@
-// 1. Waveforms
-// 2. Envelopes
-// 3. Beats per second / multiple sounds
-// 4. Musical notes
-// 5. Effects
-// 6. Instruments
-// 7. Progressions
-// 8. Bass
-// 9. Percussion
-
-
-
 sound(time: Float): Float {
     song(time)
 }
@@ -18,14 +6,25 @@ sound(time: Float): Float {
 // Song
 
 song(time: Float): Float {
-    echo(0.3, time) {time =>
-        0.5 * progressionIxVxvixIV(time, experimentalInstrument) +
-        0.5 * progressionvixIVxIxV(time - 4.0, experimentalInstrument)
-    } + 
-    0.4 * progressionBass(time, bassInstrument) +
-    0.3 * snarePattern(time) + 
-    0.3 * kickPattern(time) + 
-    0.3 * hiHatPattern(time)
+    loop(time, 32.0) {time =>
+        echo(0.3, time - 4) {time =>
+            0.5 * progressionIxVxvixIV(time, smoothToothInstrument) +
+            0.5 * progressionvixIVxIxV(time - 4.0, smoothToothInstrument)
+        } + 
+        echo(0.3, time - 24) {time =>
+            0.5 * progressionIxVxvixIV(time, experimentalInstrument) +
+            0.5 * progressionvixIVxIxV(time - 4.0, experimentalInstrument)
+        } + 
+        0.4 * progressionBass(time - 16, bassInstrument) +
+        0.4 * progressionBass(time - 24, bassInstrument) +
+        0.3 * snarePattern(time) + 
+        0.3 * kickPattern(time) + 
+        0.3 * hiHatPattern(time)
+    }
+}
+
+loop(time: Float, duration: Float, sound: Float => Float): Float {
+    sound(time % duration)
 }
 
 smoothToothInstrument(time: Float, duration: Float, frequency: Float): Float {
@@ -61,9 +60,8 @@ bassInstrument(time: Float, duration: Float, frequency: Float): Float {
 
 progressionBass(time: Float, play: (Float, Float, Float) => Float): Float {
     function multi(time: Float, frequency: Float): Float {
-        play(time - 0.25, 0.5, frequency) +
-        play(time - 0.50, 0.5, frequency) +
-        play(time - 0.75, 0.5, frequency)
+        play(time - 0.00, 1.0, frequency) +
+        play(time - 0.50, 0.5, frequency)
     }
     multi(time - 0.0, midiC(3)) + 
     multi(time - 1.0, midiB(2)) + 
