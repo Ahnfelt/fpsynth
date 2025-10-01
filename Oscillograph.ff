@@ -19,6 +19,7 @@ make(
     canvas->height = "" + height
     canvas->style->display = "block"
     canvas->style->marginTop = "15px"
+    canvas->style->maxWidth = "100%"
     //canvas->style->"image-rendering" = "pixelated"
     let context = canvas->getContext("2d")
     Oscillograph(
