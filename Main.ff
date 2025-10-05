@@ -3,7 +3,8 @@ import Sound
 
 nodeMain(system: NodeSystem): Unit {
     Log.debug("Starting server")
-    WebServer.new(system, "localhost", 8080).listen {request =>
+    let port = if(system.arguments().size() == 1) {system.arguments().grab(0).grabInt()} else {8080}
+    WebServer.new(system, "localhost", port).listen {request =>
         if(request.readPath() == "/") {
             request.writeHeader("Content-Type", "text/html; charset=UTF-8")
             request.writeText("<!doctype html>")
